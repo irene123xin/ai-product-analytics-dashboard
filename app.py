@@ -13,26 +13,125 @@ from src.model import train_churn_models
 ROOT = Path(__file__).parent
 DATA_PATH = ROOT / "data" / "product_users.csv"
 ACCENT = "#087E6B"
-COLORS = [ACCENT, "#315B73", "#7A8B8B", "#B7C2BE", "#D6A85F", "#9B5C5C"]
+NEGATIVE = "#A34F4F"
+COLORS = [ACCENT, "#3D6A63", "#78928C", "#A8B8B4", "#C7A86E", NEGATIVE]
+px.defaults.color_discrete_sequence = COLORS
 
 st.set_page_config(page_title="AI Product Analytics", page_icon=None, layout="wide")
 st.markdown(
     """
     <style>
-    :root { --accent: #087E6B; --ink: #172321; --muted: #5F6F6B; --line: #DCE4E1; --surface: #F5F8F7; }
-    .stApp { background: #FFFFFF; color: var(--ink); }
-    .block-container { max-width: 1380px; padding-top: 2.1rem; padding-bottom: 4rem; }
-    h1, h2, h3 { letter-spacing: -0.025em; color: var(--ink); }
-    h1 { font-size: 2.35rem !important; font-weight: 660 !important; }
-    h2 { margin-top: 1.8rem !important; font-size: 1.55rem !important; }
-    [data-testid="stMetric"] { border-top: 3px solid var(--accent); padding: 1rem 0.35rem 0.7rem; }
-    [data-testid="stMetricLabel"] { color: var(--muted); }
-    [data-testid="stSidebar"] { background: var(--surface); border-right: 1px solid var(--line); }
-    .section-note { color: var(--muted); max-width: 72ch; margin-bottom: 1.25rem; }
-    .recommendation { border-top: 1px solid var(--line); padding: 1rem 0 1.15rem; }
-    .recommendation h4 { margin: 0 0 .35rem; color: var(--ink); }
-    .recommendation p { margin: .25rem 0; color: var(--muted); }
-    div[data-baseweb="select"] > div { border-radius: 8px; }
+    :root {
+        --accent: #087E6B;
+        --accent-soft: #E7F1EE;
+        --ink: #192522;
+        --muted: #66736F;
+        --line: #DDE5E1;
+        --surface: #F4F6F4;
+        --panel: #FFFFFF;
+        --negative: #A34F4F;
+    }
+    html { font-size: 16px; }
+    .stApp { background: #F8F9F7; color: var(--ink); }
+    .block-container {
+        max-width: 1420px;
+        padding: 2rem 2.25rem 4.5rem;
+    }
+    h1, h2, h3, h4 { color: var(--ink); letter-spacing: -0.022em; }
+    h1 {
+        font-size: clamp(2rem, 3vw, 2.65rem) !important;
+        font-weight: 650 !important;
+        line-height: 1.08 !important;
+        margin-bottom: .55rem !important;
+    }
+    h2 {
+        font-size: 1.45rem !important;
+        font-weight: 620 !important;
+        margin: 2rem 0 .45rem !important;
+    }
+    h3 { font-size: 1.08rem !important; font-weight: 600 !important; }
+    [data-testid="stMetric"] {
+        min-height: 7.25rem;
+        padding: 1.05rem 1.1rem .9rem;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(39, 62, 56, .035);
+    }
+    [data-testid="stMetricLabel"] {
+        color: var(--muted);
+        font-size: .82rem;
+        font-weight: 540;
+        letter-spacing: .01em;
+    }
+    [data-testid="stMetricValue"] {
+        color: var(--ink);
+        font-size: 1.75rem;
+        font-weight: 650;
+        font-variant-numeric: tabular-nums;
+    }
+    [data-testid="stSidebar"] {
+        background: #F1F4F1;
+        border-right: 1px solid var(--line);
+    }
+    [data-testid="stSidebar"] [data-testid="stSidebarContent"] { padding-top: 1.25rem; }
+    [data-testid="stSidebar"] h2 {
+        font-size: 1rem !important;
+        margin: 1.35rem 0 .55rem !important;
+    }
+    [data-testid="stSidebar"] label { color: #35423F; font-size: .9rem; }
+    [data-baseweb="tag"] {
+        background-color: #E2E9E6 !important;
+        color: #31413D !important;
+        border-radius: 5px !important;
+    }
+    div[data-baseweb="select"] > div {
+        background: #FAFBFA;
+        border-color: #D6DFDB;
+        border-radius: 7px;
+        box-shadow: none;
+    }
+    .hero-kicker {
+        margin: 0 0 .45rem;
+        color: var(--accent);
+        font-size: .74rem;
+        font-weight: 650;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+    }
+    .hero-subtitle, .section-note {
+        color: var(--muted);
+        max-width: 74ch;
+        line-height: 1.55;
+    }
+    .hero-subtitle { margin: 0 0 1.75rem; font-size: 1rem; }
+    .section-note { margin: 0 0 1.25rem; }
+    .insight-line {
+        margin: 1rem 0 1.35rem;
+        padding: .8rem 1rem;
+        color: #29423C;
+        background: var(--accent-soft);
+        border-left: 3px solid var(--accent);
+        border-radius: 0 7px 7px 0;
+        font-size: .92rem;
+    }
+    .recommendation {
+        margin: 0 0 .85rem;
+        padding: 1.15rem 1.25rem 1.2rem;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+    }
+    .recommendation h4 { margin: 0 0 .75rem; font-size: 1.08rem; }
+    .recommendation p { margin: .4rem 0; color: var(--muted); line-height: 1.48; }
+    .recommendation strong { color: #34433F; font-weight: 600; }
+    [data-testid="stDataFrame"] { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    [data-testid="stAlert"] { border-radius: 8px; }
+    hr { border-color: var(--line); }
+    @media (max-width: 900px) {
+        .block-container { padding: 1.35rem 1rem 3rem; }
+        [data-testid="stMetric"] { min-height: 6.5rem; }
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -62,7 +161,21 @@ def filter_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def plot(fig):
-    fig.update_layout(template="plotly_white", colorway=COLORS, margin=dict(l=15, r=15, t=45, b=15), font=dict(family="Arial", color="#263532"), legend_title_text="")
+    fig.update_layout(
+        template="plotly_white",
+        colorway=COLORS,
+        margin=dict(l=18, r=12, t=58, b=22),
+        height=390,
+        font=dict(family="Arial, sans-serif", size=13, color="#3B4945"),
+        title_font=dict(size=17, color="#192522"),
+        legend_title_text="",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="#FFFFFF",
+        hoverlabel=dict(bgcolor="#FFFFFF", font_color="#192522", bordercolor="#DDE5E1"),
+    )
+    fig.update_xaxes(showgrid=False, zeroline=False, linecolor="#DDE5E1", tickfont=dict(size=12))
+    fig.update_yaxes(showgrid=True, gridcolor="#E9EEEB", gridwidth=1, zeroline=False, tickfont=dict(size=12))
     st.plotly_chart(fig, width="stretch")
 
 
@@ -75,9 +188,9 @@ page = st.sidebar.radio("Analysis", pages, index=default_page)
 if page != requested_page:
     st.query_params["page"] = page
 
-st.caption("PRODUCT ANALYTICS CASE STUDY")
+st.markdown('<p class="hero-kicker">Product analytics case study</p>', unsafe_allow_html=True)
 st.title("AI Product Analytics Dashboard")
-st.markdown('<p class="section-note">Engagement, activation, retention, and churn signals for a synthetic AI collaboration product.</p>', unsafe_allow_html=True)
+st.markdown('<p class="hero-subtitle">Activation, engagement, retention, conversion, and churn insights for a simulated AI SaaS product.</p>', unsafe_allow_html=True)
 
 if filtered.empty:
     st.warning("No users match the selected filters. Broaden the filter selection to continue.")
@@ -91,6 +204,10 @@ if page == "Overview":
     cols[2].metric("Paid conversion", f"{metrics['paid_conversion_rate']:.1%}")
     cols[3].metric("Churn rate", f"{metrics['churn_rate']:.1%}")
     cols[4].metric("ARPU", f"${metrics['arpu']:.2f}")
+    st.markdown(
+        f'<div class="insight-line"><strong>What to notice:</strong> {metrics["most_used_feature"]} is the most-used capability in this selection. Compare acquisition volume with converted users, then review how revenue concentrates across plans.</div>',
+        unsafe_allow_html=True,
+    )
     left, right = st.columns([1.2, 1])
     with left:
         monthly = filtered.assign(signup_month=filtered["signup_date"].dt.to_period("M").astype(str)).groupby("signup_month", as_index=False).agg(users=("user_id", "count"), paid=("trial_to_paid", "sum"))
@@ -98,7 +215,6 @@ if page == "Overview":
     with right:
         plan = filtered.groupby("plan_type", as_index=False).agg(users=("user_id", "count"), revenue=("monthly_revenue", "sum"))
         plot(px.bar(plan, x="plan_type", y="revenue", color="plan_type", title="Monthly revenue by plan"))
-    st.info(f"The most-used product capability in this selection is **{metrics['most_used_feature']}**.")
 
 elif page == "User Engagement":
     st.header("User engagement")
@@ -164,4 +280,4 @@ else:
     st.header("Product recommendations")
     st.markdown('<p class="section-note">Prioritized opportunities derived from descriptive patterns. Each should be validated through instrumentation and controlled experiments.</p>', unsafe_allow_html=True)
     for rec in product_recommendations(filtered):
-        st.markdown(f'<div class="recommendation"><h4>{rec["title"]}</h4><p><strong>Finding:</strong> {rec["finding"]}</p><p><strong>Proposed action:</strong> {rec["action"]}</p><p><strong>Expected impact:</strong> {rec["impact"]}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="recommendation"><h4>{rec["title"]}</h4><p><strong>Finding and evidence:</strong> {rec["finding"]}</p><p><strong>Proposed action:</strong> {rec["action"]}</p><p><strong>Expected impact:</strong> {rec["impact"]}</p></div>', unsafe_allow_html=True)
