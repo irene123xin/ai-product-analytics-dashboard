@@ -2,7 +2,7 @@
 
 An end-to-end product analytics case study for a simulated AI SaaS product, analyzing 7,500 users to understand activation, engagement, conversion, retention, and churn, and translating behavioral data into actionable product decisions.
 
-**Live Demo:** [Open the dashboard](https://ai-product-analytics-dashboard-5edbb6rrzzefm9fvh9ed6y.streamlit.app)
+**Live Demo:** [Open the dashboard](https://ai-appuct-analytics-dashboard-5edbb6rrzzefm9fvh9ed6y.streamlit.app/~/+/#ai-product-analytics-dashboard)
 
 > This project uses a reproducible synthetic dataset designed to simulate realistic SaaS user behavior. The analysis demonstrates product analytics methodology and decision-making rather than production or causal claims.
 
